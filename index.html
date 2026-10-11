@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega-Tools HTML</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #111;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            background: #1e1e24;
+            width: 320px;
+            padding: 25px;
+            border-radius: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: relative;
+            border: 2px solid #333;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #888;
+        }
+
+        .screen {
+            background: #000;
+            color: #fff;
+            height: 160px;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .screen span {
+            font-size: 14px;
+            color: #666;
+            font-weight: bold;
+        }
+
+        .screen .big-text {
+            font-size: 48px;
+            font-weight: 800;
+            line-height: 1;
+            text-shadow: 0 0 20px rgba(255,255,255,0.2);
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        button {
+            background: #333;
+            border: none;
+            height: 60px;
+            border-radius: 12px;
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.2s;
+            font-weight: 500;
+        }
+
+        button:hover { background: #444; }
+        button:active { transform: scale(0.95); }
+
+        .btn-main {
+            background: #3b82f6;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
+        }
+        .btn-main:hover { background: #60a5fa; }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        /* Effets subtils */
+        .glow { animation: glow 3s infinite alternate; }
+        @keyframes glow { from { box-shadow: 0 0 10px #000;} to { box-shadow: 0 0 20px #222; } }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <span>Tools.HTML</span>
+            <span>v1.0</span>
+        </div>
+
+        <!-- L'écran d'affichage -->
+        <div class="screen glow">
+            <div class="small-info">TOTAL</div>
+            <div class="big-text" id="display">0</div>
+            <div class="sub-title" id="subDisplay">UNIT</div>
+        </div>
+
+        <!-- Clavier / Controls -->
+        <div class="tool-grid">
+            <!-- Range 1 -->
+            <div class="btn-row">
+                <button class="btn-main" onclick="calc(1)">1</button>
+                <button class="btn-main" onclick="calc(2)">2</button>
+            </div>
+            
+            <!-- Range 2 -->
+            <div class="btn-row">
+                <button style="background:#2d3748" onclick="setOp('/')">÷</button>
+                <button class="btn-main" onclick="calc(3)">3</button>
+                <button style="background:#2d3748" onclick="setOp('*')">×</button>
+            </div>
+
+            <!-- Extras -->
+            <div class="row">
+                <button onclick="setOp('+')">+</button>
+                <button onclick="setOp('-')">-</button>
+                <button onclick="randomize()">★</button>
+            </div>
+
+            <!-- Littéralement 9 Buttons si besoin -->
+             <div class="row">
+                <button onclick="setOp('>')">></button>
+                <button onclick="setOp('<')">/</button>
+                <button onclick="setOp('=')">=</button>
+            </div>
+        </div>
+        
+        <!-- Decorative footer -->
+        <div style="margin-top:20px; display:flex; justify-content:space-between; color:#333; font-size:10px;">
+            <span>START</span>
+            <span>STOP</span>
+        </div>
+    </div>
+
+    <script>
+        // Logique mathématique simple
+        let num1 = 0;
+        let operator = null;
+        let isStarting = true;
+        let val = 0; // Pour le "Clic" machine
+
+        // Fonction math
+        function calc(n) {
+            if(isStarting) {
+                num1 = n;
+                isStarting = false;
+            } else if(operator) {
+                num1 = calculate(num1, val, operator);
+                operator = null;
+            }
+            
+            val = n;
+            updateDisplay();
+        }
+
+        function calculate(first, second, op) {
+            switch(op) {
+                case '+': return first + second;
+                case '-': return first - second;
+                case '*': return first * second; // Pièces, mesures
+                case '/': return first / second;
+                case '>': return first + 35; // Plus 10%
+                case '<': return first - 35;
+                default: return first;
+            }
+        }
+
+        function setOp(op) {
+            if(isStarting) {
+                isStarting = false;
+            }
+            operator = op;
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            document.querySelector('#display').innerText = (isStarting ? num1 : val);
+            document.querySelector('#subDisplay').innerText = isStarting ? 'READY' : 'UNIT';
+        }
+
+        function randomize() {
+            let rnd = (Math.random() * 50 + 50).toFixed(0);
+            val = rnd;
+            updateDisplay();
+        }
+
+        // Petit effet "Mega"
+        let i = 0;
+        setInterval(() => {
+            document.querySelector(container).style.transform = `scale(${1 + (i/20)})`;
+            i++;
+        }, 5000);
+
+        // Interaction d'écran
+        window.onclick = function(e) {
+            updateDisplay();
+        }
+    </script>
+</body>
+</html>
